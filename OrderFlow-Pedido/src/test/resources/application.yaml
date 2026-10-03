@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:orderflow-pedido;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
+orderflow:
+  integracao:
+    cliente-url: http://localhost:8081
+    estoque-url: http://localhost:8082
+    produto-url: http://localhost:8086

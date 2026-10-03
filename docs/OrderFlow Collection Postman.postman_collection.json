@@ -1,0 +1,422 @@
+{
+  "info": {
+    "name": "OrderFlow Collection Postman",
+    "description": "Simulação dos endpoints da plataforma OrderFlow. Cada domínio é uma aplicação independente, com URL base própria definida nas variáveis da collection. As requisições de criação gravam o id retornado nas variáveis da collection.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "clienteUrl", "value": "http://localhost:8081" },
+    { "key": "estoqueUrl", "value": "http://localhost:8082" },
+    { "key": "financeiroUrl", "value": "http://localhost:8083" },
+    { "key": "logisticaUrl", "value": "http://localhost:8084" },
+    { "key": "pedidoUrl", "value": "http://localhost:8085" },
+    { "key": "produtoUrl", "value": "http://localhost:8086" },
+    { "key": "clienteId", "value": "" },
+    { "key": "cpfCnpj", "value": "12345678901" },
+    { "key": "produtoId", "value": "" },
+    { "key": "sku", "value": "CANETA-AZUL" },
+    { "key": "pedidoId", "value": "" },
+    { "key": "itemId", "value": "" },
+    { "key": "financeiroId", "value": "" },
+    { "key": "logisticaId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Cliente",
+      "item": [
+        {
+          "name": "Criar cliente",
+          "event": [
+            {
+              "listen": "test",
+              "script": { "type": "text/javascript", "exec": ["if (pm.response.code === 201) { const cliente = pm.response.json(); pm.collectionVariables.set('clienteId', cliente.id); pm.collectionVariables.set('cpfCnpj', cliente.cpfCnpj); }"] }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"cpfCnpj\": \"12345678901\",\n  \"nome\": \"Maria Silva\",\n  \"telefone\": \"11999999999\",\n  \"email\": \"maria@email.com\",\n  \"endereco\": \"Rua das Flores, 100\"\n}" },
+            "url": { "raw": "{{clienteUrl}}/clientes", "host": ["{{clienteUrl}}"], "path": ["clientes"] }
+          }
+        },
+        {
+          "name": "Listar clientes",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{clienteUrl}}/clientes?page=0&size=20&sort=nome,asc",
+              "host": ["{{clienteUrl}}"], "path": ["clientes"],
+              "query": [{ "key": "page", "value": "0" }, { "key": "size", "value": "20" }, { "key": "sort", "value": "nome,asc" }]
+            }
+          }
+        },
+        {
+          "name": "Buscar cliente por CPF/CNPJ",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{clienteUrl}}/clientes/{{cpfCnpj}}", "host": ["{{clienteUrl}}"], "path": ["clientes", "{{cpfCnpj}}"] }
+          }
+        },
+        {
+          "name": "Atualizar cliente (total)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"cpfCnpj\": \"12345678000190\",\n  \"nome\": \"Maria Silva ME\",\n  \"telefone\": \"1133334444\",\n  \"email\": \"contato@mariasilva.com\",\n  \"endereco\": \"Av. Paulista, 1000\"\n}" },
+            "url": { "raw": "{{clienteUrl}}/clientes/{{clienteId}}", "host": ["{{clienteUrl}}"], "path": ["clientes", "{{clienteId}}"] }
+          }
+        },
+        {
+          "name": "Atualizar cliente (parcial)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"telefone\": \"11988887777\"\n}" },
+            "url": { "raw": "{{clienteUrl}}/clientes/{{clienteId}}", "host": ["{{clienteUrl}}"], "path": ["clientes", "{{clienteId}}"] }
+          }
+        },
+        {
+          "name": "Excluir cliente",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{clienteUrl}}/clientes/{{clienteId}}", "host": ["{{clienteUrl}}"], "path": ["clientes", "{{clienteId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Estoque",
+      "item": [
+        {
+          "name": "Criar estoque",
+          "request": {
+            "description": "Utilizado pelo domínio Produto ao criar um produto. Cria o estoque do SKU com quantidade 0.",
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"sku\": \"{{sku}}\"\n}" },
+            "url": { "raw": "{{estoqueUrl}}/estoques", "host": ["{{estoqueUrl}}"], "path": ["estoques"] }
+          }
+        },
+        {
+          "name": "Listar estoques",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{estoqueUrl}}/estoques?page=0&size=20",
+              "host": ["{{estoqueUrl}}"], "path": ["estoques"],
+              "query": [{ "key": "page", "value": "0" }, { "key": "size", "value": "20" }]
+            }
+          }
+        },
+        {
+          "name": "Listar estoques por quantidade disponível",
+          "request": {
+            "description": "Retorna os estoques com quantidade maior ou igual a quantidadeMinima.",
+            "method": "GET",
+            "url": {
+              "raw": "{{estoqueUrl}}/estoques?quantidadeMinima=1&page=0&size=20",
+              "host": ["{{estoqueUrl}}"], "path": ["estoques"],
+              "query": [{ "key": "quantidadeMinima", "value": "1" }, { "key": "page", "value": "0" }, { "key": "size", "value": "20" }]
+            }
+          }
+        },
+        {
+          "name": "Buscar estoque do produto (SKU)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{estoqueUrl}}/estoques/{{sku}}", "host": ["{{estoqueUrl}}"], "path": ["estoques", "{{sku}}"] }
+          }
+        },
+        {
+          "name": "Atualizar quantidade",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"quantidade\": 100\n}" },
+            "url": { "raw": "{{estoqueUrl}}/estoques/{{sku}}", "host": ["{{estoqueUrl}}"], "path": ["estoques", "{{sku}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Financeiro",
+      "item": [
+        {
+          "name": "Criar financeiro",
+          "event": [
+            {
+              "listen": "test",
+              "script": { "type": "text/javascript", "exec": ["if (pm.response.code === 201) { pm.collectionVariables.set('financeiroId', pm.response.json().id); }"] }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"idPedido\": \"{{pedidoId}}\",\n  \"valor\": 25.00,\n  \"status\": \"PENDENTE\"\n}" },
+            "url": { "raw": "{{financeiroUrl}}/financeiros", "host": ["{{financeiroUrl}}"], "path": ["financeiros"] }
+          }
+        },
+        {
+          "name": "Listar financeiros",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{financeiroUrl}}/financeiros?page=0&size=20",
+              "host": ["{{financeiroUrl}}"], "path": ["financeiros"],
+              "query": [{ "key": "page", "value": "0" }, { "key": "size", "value": "20" }]
+            }
+          }
+        },
+        {
+          "name": "Buscar financeiro por id",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{financeiroUrl}}/financeiros/{{financeiroId}}", "host": ["{{financeiroUrl}}"], "path": ["financeiros", "{{financeiroId}}"] }
+          }
+        },
+        {
+          "name": "Alterar valor e status",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"valor\": 30.00,\n  \"status\": \"APROVADO\"\n}" },
+            "url": { "raw": "{{financeiroUrl}}/financeiros/{{financeiroId}}", "host": ["{{financeiroUrl}}"], "path": ["financeiros", "{{financeiroId}}"] }
+          }
+        },
+        {
+          "name": "Excluir financeiro",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{financeiroUrl}}/financeiros/{{financeiroId}}", "host": ["{{financeiroUrl}}"], "path": ["financeiros", "{{financeiroId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Logística",
+      "item": [
+        {
+          "name": "Criar registro",
+          "event": [
+            {
+              "listen": "test",
+              "script": { "type": "text/javascript", "exec": ["if (pm.response.code === 201) { pm.collectionVariables.set('logisticaId', pm.response.json().id); }"] }
+            }
+          ],
+          "request": {
+            "description": "Quando status não é informado, o registro é criado como PENDENTE_PAGAMENTO.",
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"idPedido\": \"{{pedidoId}}\",\n  \"ocorrencia\": \"Aguardando confirmação de pagamento\"\n}" },
+            "url": { "raw": "{{logisticaUrl}}/logisticas", "host": ["{{logisticaUrl}}"], "path": ["logisticas"] }
+          }
+        },
+        {
+          "name": "Listar registros",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{logisticaUrl}}/logisticas?page=0&size=20",
+              "host": ["{{logisticaUrl}}"], "path": ["logisticas"],
+              "query": [{ "key": "page", "value": "0" }, { "key": "size", "value": "20" }]
+            }
+          }
+        },
+        {
+          "name": "Buscar registro por id",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{logisticaUrl}}/logisticas/{{logisticaId}}", "host": ["{{logisticaUrl}}"], "path": ["logisticas", "{{logisticaId}}"] }
+          }
+        },
+        {
+          "name": "Alterar status",
+          "request": {
+            "description": "A ocorrência é opcional; quando não informada, a ocorrência passa a ser null.",
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"INICIADA\",\n  \"ocorrencia\": \"Pedido coletado pela transportadora\"\n}" },
+            "url": { "raw": "{{logisticaUrl}}/logisticas/{{logisticaId}}/status", "host": ["{{logisticaUrl}}"], "path": ["logisticas", "{{logisticaId}}", "status"] }
+          }
+        },
+        {
+          "name": "Excluir registro",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{logisticaUrl}}/logisticas/{{logisticaId}}", "host": ["{{logisticaUrl}}"], "path": ["logisticas", "{{logisticaId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pedido",
+      "item": [
+        {
+          "name": "Criar pedido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const pedido = pm.response.json();",
+                  "  pm.collectionVariables.set('pedidoId', pedido.id);",
+                  "  pm.collectionVariables.set('itemId', pedido.itens[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "description": "Valida cliente e produtos e debita o estoque dos itens.",
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"cpfCnpj\": \"{{cpfCnpj}}\",\n  \"itens\": [\n    {\n      \"idProduto\": \"{{produtoId}}\",\n      \"quantidade\": 2\n    }\n  ]\n}" },
+            "url": { "raw": "{{pedidoUrl}}/pedidos", "host": ["{{pedidoUrl}}"], "path": ["pedidos"] }
+          }
+        },
+        {
+          "name": "Listar pedidos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{pedidoUrl}}/pedidos?page=0&size=20",
+              "host": ["{{pedidoUrl}}"], "path": ["pedidos"],
+              "query": [{ "key": "page", "value": "0" }, { "key": "size", "value": "20" }]
+            }
+          }
+        },
+        {
+          "name": "Buscar pedido por id",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{pedidoUrl}}/pedidos/{{pedidoId}}", "host": ["{{pedidoUrl}}"], "path": ["pedidos", "{{pedidoId}}"] }
+          }
+        },
+        {
+          "name": "Incluir item",
+          "request": {
+            "description": "Não é permitido mais de um item com o mesmo SKU no pedido.",
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"idProduto\": \"{{produtoId}}\",\n  \"quantidade\": 1\n}" },
+            "url": { "raw": "{{pedidoUrl}}/pedidos/{{pedidoId}}/itens", "host": ["{{pedidoUrl}}"], "path": ["pedidos", "{{pedidoId}}", "itens"] }
+          }
+        },
+        {
+          "name": "Alterar quantidade do item",
+          "request": {
+            "description": "Ajusta o estoque conforme a diferença de quantidade.",
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"quantidade\": 5\n}" },
+            "url": { "raw": "{{pedidoUrl}}/pedidos/{{pedidoId}}/itens/{{itemId}}", "host": ["{{pedidoUrl}}"], "path": ["pedidos", "{{pedidoId}}", "itens", "{{itemId}}"] }
+          }
+        },
+        {
+          "name": "Remover item",
+          "request": {
+            "description": "Devolve ao estoque a quantidade do item removido.",
+            "method": "DELETE",
+            "url": { "raw": "{{pedidoUrl}}/pedidos/{{pedidoId}}/itens/{{itemId}}", "host": ["{{pedidoUrl}}"], "path": ["pedidos", "{{pedidoId}}", "itens", "{{itemId}}"] }
+          }
+        },
+        {
+          "name": "Excluir pedido",
+          "request": {
+            "description": "Devolve ao estoque a quantidade de todos os itens do pedido.",
+            "method": "DELETE",
+            "url": { "raw": "{{pedidoUrl}}/pedidos/{{pedidoId}}", "host": ["{{pedidoUrl}}"], "path": ["pedidos", "{{pedidoId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Produto",
+      "item": [
+        {
+          "name": "Criar produto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const produto = pm.response.json();",
+                  "  pm.collectionVariables.set('produtoId', produto.id);",
+                  "  pm.collectionVariables.set('sku', produto.sku);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "description": "Cria também o estoque do SKU com quantidade 0 no domínio Estoque.",
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"sku\": \"CANETA-AZUL\",\n  \"nome\": \"Caneta Azul\",\n  \"descricao\": \"Caneta esferográfica azul\",\n  \"preco\": 2.50,\n  \"ativo\": true\n}" },
+            "url": { "raw": "{{produtoUrl}}/produtos", "host": ["{{produtoUrl}}"], "path": ["produtos"] }
+          }
+        },
+        {
+          "name": "Listar produtos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{produtoUrl}}/produtos?page=0&size=20",
+              "host": ["{{produtoUrl}}"], "path": ["produtos"],
+              "query": [{ "key": "page", "value": "0" }, { "key": "size", "value": "20" }]
+            }
+          }
+        },
+        {
+          "name": "Listar produtos por ativo",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{produtoUrl}}/produtos?ativo=true&page=0&size=20",
+              "host": ["{{produtoUrl}}"], "path": ["produtos"],
+              "query": [{ "key": "ativo", "value": "true" }, { "key": "page", "value": "0" }, { "key": "size", "value": "20" }]
+            }
+          }
+        },
+        {
+          "name": "Buscar produto por id",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{produtoUrl}}/produtos/{{produtoId}}", "host": ["{{produtoUrl}}"], "path": ["produtos", "{{produtoId}}"] }
+          }
+        },
+        {
+          "name": "Atualizar produto (total)",
+          "request": {
+            "description": "Altera todos os campos, exceto id e sku.",
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"nome\": \"Caneta Azul Premium\",\n  \"descricao\": \"Caneta esferográfica azul 0.7mm\",\n  \"preco\": 3.90,\n  \"ativo\": true\n}" },
+            "url": { "raw": "{{produtoUrl}}/produtos/{{produtoId}}", "host": ["{{produtoUrl}}"], "path": ["produtos", "{{produtoId}}"] }
+          }
+        },
+        {
+          "name": "Atualizar produto (parcial)",
+          "request": {
+            "description": "Altera somente os campos informados, exceto id e sku.",
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"preco\": 4.50\n}" },
+            "url": { "raw": "{{produtoUrl}}/produtos/{{produtoId}}", "host": ["{{produtoUrl}}"], "path": ["produtos", "{{produtoId}}"] }
+          }
+        },
+        {
+          "name": "Excluir produto",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{produtoUrl}}/produtos/{{produtoId}}", "host": ["{{produtoUrl}}"], "path": ["produtos", "{{produtoId}}"] }
+          }
+        }
+      ]
+    }
+  ]
+}
