@@ -9,7 +9,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -45,29 +43,29 @@ public class ProdutoController {
     }
 
     @GetMapping
-    public Page<ProdutoResponse> listar(@RequestParam(required = false) Boolean ativo, Pageable pageable) {
-        return produtoService.listar(ativo, pageable);
+    public ResponseEntity<Page<ProdutoResponse>> listar(@RequestParam(required = false) Boolean ativo, Pageable pageable) {
+        return ResponseEntity.ok(produtoService.listar(ativo, pageable));
     }
 
     @GetMapping("/{id}")
-    public ProdutoResponse buscarPorId(@PathVariable UUID id) {
-        return produtoService.buscarPorId(id);
+    public ResponseEntity<ProdutoResponse> buscarPorId(@PathVariable UUID id) {
+        return ResponseEntity.ok(produtoService.buscarPorId(id));
     }
 
     @PutMapping("/{id}")
-    public ProdutoResponse atualizar(@PathVariable UUID id, @RequestBody @Valid ProdutoAtualizacaoRequest request) {
-        return produtoService.atualizar(id, request);
+    public ResponseEntity<ProdutoResponse> atualizar(@PathVariable UUID id, @RequestBody @Valid ProdutoAtualizacaoRequest request) {
+        return ResponseEntity.ok(produtoService.atualizar(id, request));
     }
 
     @PatchMapping("/{id}")
-    public ProdutoResponse atualizarParcialmente(@PathVariable UUID id,
-                                                 @RequestBody @Valid ProdutoAtualizacaoParcialRequest request) {
-        return produtoService.atualizarParcialmente(id, request);
+    public ResponseEntity<ProdutoResponse> atualizarParcialmente(@PathVariable UUID id,
+                                                                 @RequestBody @Valid ProdutoAtualizacaoParcialRequest request) {
+        return ResponseEntity.ok(produtoService.atualizarParcialmente(id, request));
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void excluir(@PathVariable UUID id) {
+    public ResponseEntity<Void> excluir(@PathVariable UUID id) {
         produtoService.excluir(id);
+        return ResponseEntity.noContent().build();
     }
 }

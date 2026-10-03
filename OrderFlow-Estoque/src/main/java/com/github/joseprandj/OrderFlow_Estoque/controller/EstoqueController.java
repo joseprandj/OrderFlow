@@ -42,18 +42,18 @@ public class EstoqueController {
     }
 
     @GetMapping
-    public Page<EstoqueResponse> listar(@RequestParam(required = false) Integer quantidadeMinima, Pageable pageable) {
-        return estoqueService.listar(quantidadeMinima, pageable);
+    public ResponseEntity<Page<EstoqueResponse>> listar(@RequestParam(required = false) Integer quantidadeMinima, Pageable pageable) {
+        return ResponseEntity.ok(estoqueService.listar(quantidadeMinima, pageable));
     }
 
     @GetMapping("/{sku}")
-    public EstoqueResponse buscarPorSku(@PathVariable String sku) {
-        return estoqueService.buscarPorSku(sku);
+    public ResponseEntity<EstoqueResponse> buscarPorSku(@PathVariable String sku) {
+        return ResponseEntity.ok(estoqueService.buscarPorSku(sku));
     }
 
     @PatchMapping("/{sku}")
-    public EstoqueResponse atualizarQuantidade(@PathVariable String sku,
-                                               @RequestBody @Valid EstoqueQuantidadeRequest request) {
-        return estoqueService.atualizarQuantidade(sku, request);
+    public ResponseEntity<EstoqueResponse> atualizarQuantidade(@PathVariable String sku,
+                                                               @RequestBody @Valid EstoqueQuantidadeRequest request) {
+        return ResponseEntity.ok(estoqueService.atualizarQuantidade(sku, request));
     }
 }

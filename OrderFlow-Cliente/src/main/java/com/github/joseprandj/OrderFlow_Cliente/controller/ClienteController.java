@@ -8,7 +8,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -43,29 +41,29 @@ public class ClienteController {
     }
 
     @GetMapping
-    public Page<ClienteResponse> listar(Pageable pageable) {
-        return clienteService.listar(pageable);
+    public ResponseEntity<Page<ClienteResponse>> listar(Pageable pageable) {
+        return ResponseEntity.ok(clienteService.listar(pageable));
     }
 
     @GetMapping("/{cpfCnpj}")
-    public ClienteResponse buscarPorCpfCnpj(@PathVariable String cpfCnpj) {
-        return clienteService.buscarPorCpfCnpj(cpfCnpj);
+    public ResponseEntity<ClienteResponse> buscarPorCpfCnpj(@PathVariable String cpfCnpj) {
+        return ResponseEntity.ok(clienteService.buscarPorCpfCnpj(cpfCnpj));
     }
 
     @PutMapping("/{id}")
-    public ClienteResponse atualizar(@PathVariable UUID id, @RequestBody @Valid ClienteRequest request) {
-        return clienteService.atualizar(id, request);
+    public ResponseEntity<ClienteResponse> atualizar(@PathVariable UUID id, @RequestBody @Valid ClienteRequest request) {
+        return ResponseEntity.ok(clienteService.atualizar(id, request));
     }
 
     @PatchMapping("/{id}")
-    public ClienteResponse atualizarParcialmente(@PathVariable UUID id,
-                                                 @RequestBody @Valid ClienteAtualizacaoParcialRequest request) {
-        return clienteService.atualizarParcialmente(id, request);
+    public ResponseEntity<ClienteResponse> atualizarParcialmente(@PathVariable UUID id,
+                                                                 @RequestBody @Valid ClienteAtualizacaoParcialRequest request) {
+        return ResponseEntity.ok(clienteService.atualizarParcialmente(id, request));
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void excluir(@PathVariable UUID id) {
+    public ResponseEntity<Void> excluir(@PathVariable UUID id) {
         clienteService.excluir(id);
+        return ResponseEntity.noContent().build();
     }
 }

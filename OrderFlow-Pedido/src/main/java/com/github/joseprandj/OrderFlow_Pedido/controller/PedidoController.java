@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -43,35 +42,34 @@ public class PedidoController {
     }
 
     @GetMapping
-    public Page<PedidoResponse> listar(Pageable pageable) {
-        return pedidoService.listar(pageable);
+    public ResponseEntity<Page<PedidoResponse>> listar(Pageable pageable) {
+        return ResponseEntity.ok(pedidoService.listar(pageable));
     }
 
     @GetMapping("/{id}")
-    public PedidoResponse buscarPorId(@PathVariable UUID id) {
-        return pedidoService.buscarPorId(id);
+    public ResponseEntity<PedidoResponse> buscarPorId(@PathVariable UUID id) {
+        return ResponseEntity.ok(pedidoService.buscarPorId(id));
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void excluir(@PathVariable UUID id) {
+    public ResponseEntity<Void> excluir(@PathVariable UUID id) {
         pedidoService.excluir(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/itens")
-    @ResponseStatus(HttpStatus.CREATED)
-    public PedidoResponse incluirItem(@PathVariable UUID id, @RequestBody @Valid ItemPedidoRequest request) {
-        return pedidoService.incluirItem(id, request);
+    public ResponseEntity<PedidoResponse> incluirItem(@PathVariable UUID id, @RequestBody @Valid ItemPedidoRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(pedidoService.incluirItem(id, request));
     }
 
     @PatchMapping("/{id}/itens/{idItem}")
-    public PedidoResponse alterarItem(@PathVariable UUID id, @PathVariable UUID idItem,
-                                      @RequestBody @Valid ItemPedidoQuantidadeRequest request) {
-        return pedidoService.alterarItem(id, idItem, request);
+    public ResponseEntity<PedidoResponse> alterarItem(@PathVariable UUID id, @PathVariable UUID idItem,
+                                                      @RequestBody @Valid ItemPedidoQuantidadeRequest request) {
+        return ResponseEntity.ok(pedidoService.alterarItem(id, idItem, request));
     }
 
     @DeleteMapping("/{id}/itens/{idItem}")
-    public PedidoResponse removerItem(@PathVariable UUID id, @PathVariable UUID idItem) {
-        return pedidoService.removerItem(id, idItem);
+    public ResponseEntity<PedidoResponse> removerItem(@PathVariable UUID id, @PathVariable UUID idItem) {
+        return ResponseEntity.ok(pedidoService.removerItem(id, idItem));
     }
 }

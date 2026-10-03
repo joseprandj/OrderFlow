@@ -8,7 +8,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -42,23 +40,23 @@ public class FinanceiroController {
     }
 
     @GetMapping
-    public Page<FinanceiroResponse> listar(Pageable pageable) {
-        return financeiroService.listar(pageable);
+    public ResponseEntity<Page<FinanceiroResponse>> listar(Pageable pageable) {
+        return ResponseEntity.ok(financeiroService.listar(pageable));
     }
 
     @GetMapping("/{id}")
-    public FinanceiroResponse buscarPorId(@PathVariable UUID id) {
-        return financeiroService.buscarPorId(id);
+    public ResponseEntity<FinanceiroResponse> buscarPorId(@PathVariable UUID id) {
+        return ResponseEntity.ok(financeiroService.buscarPorId(id));
     }
 
     @PutMapping("/{id}")
-    public FinanceiroResponse atualizar(@PathVariable UUID id, @RequestBody @Valid FinanceiroAtualizacaoRequest request) {
-        return financeiroService.atualizar(id, request);
+    public ResponseEntity<FinanceiroResponse> atualizar(@PathVariable UUID id, @RequestBody @Valid FinanceiroAtualizacaoRequest request) {
+        return ResponseEntity.ok(financeiroService.atualizar(id, request));
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void excluir(@PathVariable UUID id) {
+    public ResponseEntity<Void> excluir(@PathVariable UUID id) {
         financeiroService.excluir(id);
+        return ResponseEntity.noContent().build();
     }
 }
