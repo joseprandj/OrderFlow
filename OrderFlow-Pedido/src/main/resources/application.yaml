@@ -1,13 +1,13 @@
 server:
-  port: ${SERVER_PORT:8085}
+  port: 8085
 
 spring:
   application:
     name: OrderFlow-Pedido
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/orderflow}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:postgres}
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: 123456
   jpa:
     hibernate:
       ddl-auto: update
@@ -15,6 +15,6 @@ spring:
 
 orderflow:
   integracao:
-    cliente-url: ${CLIENTE_URL:http://localhost:8081}
-    estoque-url: ${ESTOQUE_URL:http://localhost:8082}
-    produto-url: ${PRODUTO_URL:http://localhost:8086}
+    cliente-url: http://localhost:8081
+    estoque-url: http://localhost:8082
+    produto-url: http://localhost:8086

@@ -57,6 +57,11 @@ OrderFlow-Produto/
   - Endpoints de consulta que retornem listas devem utilizar paginação com `Pageable`.
 - *Controllers* devem lidar com responsabilidades relacionadas à camada HTTP (Request/Response).
   - Não devem conter regras de negócio.
+  - Todos os endpoints devem retornar `ResponseEntity<T>`, definindo explicitamente o status HTTP da resposta.
+    - Consultas e atualizações: `ResponseEntity.ok(body)`.
+    - Criação de recurso: `ResponseEntity.created(location).body(body)`, ou `ResponseEntity.status(HttpStatus.CREATED).body(body)` quando não houver URI do recurso criado.
+    - Operações sem corpo de resposta: `ResponseEntity<Void>` com `ResponseEntity.noContent().build()`.
+    - Não utilizar `@ResponseStatus` nem retornar DTOs, `Page` ou `void` diretamente nos métodos dos Controllers.
 - *Services* devem ser responsáveis pela implementação das regras de negócio e pela orquestração das operações necessárias para executá-las.
   - Utilizar `@Transactional` em operações de serviço que realizam escrita ou alteração de dados.  
   - Utilizar `@Transactional(readOnly = true)` em operações de serviço que realizam somente leitura.
@@ -86,6 +91,16 @@ OrderFlow-Produto/
 - Exceções inesperadas devem possuir um tratamento genérico.
 - Não expor stack trace, detalhes internos da aplicação ou informações sensíveis nas respostas da API.
 - Quando já existir um contrato padronizado para respostas de erro, novas exceções devem utilizá-lo em vez de criar novos formatos de resposta.
+
+---
+## Configuração
+- Cada módulo deve possuir dois arquivos de configuração em `src/main/resources/`:
+  - `application.yaml`: configuração padrão para execução local, com os dados de acesso de `localhost` (banco de dados, portas e URLs de integração) definidos diretamente, sem variáveis de ambiente.
+  - `application-producao.yaml`: cópia da configuração padrão em que os valores de ambiente (credenciais, URLs, portas) são definidos exclusivamente por variáveis de ambiente, sem valores padrão.
+- O perfil de produção é ativado com `SPRING_PROFILES_ACTIVE=producao`.
+- Não versionar credenciais de produção; elas devem ser informadas somente por variáveis de ambiente.
+- Toda nova propriedade deve ser adicionada aos dois arquivos, mantendo-os com a mesma estrutura.
+- A configuração dos testes automatizados permanece em `src/test/resources/application.yaml`.
 
 ---
 ## Testes
